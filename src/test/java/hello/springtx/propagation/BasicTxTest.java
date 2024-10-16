@@ -71,6 +71,7 @@ public class BasicTxTest {
         log.info("트랜잭션2 롤백");
         txManager.rollback(tx2);
     }
+
     // 두 개의 트랜잭션을 연속으로 처리하면서, 첫 번째 트랜잭션은 롤백하고, 두 번째 트랜잭션은 커밋할 때 어떻게 동작하는지 확인.
     @Test
     void inner_commit() {
@@ -84,5 +85,17 @@ public class BasicTxTest {
         txManager.commit(inner);
         log.info("외부 트랜잭션 커밋");
         txManager.commit(outer);
+    }
+
+    @Test
+    void outer_rollback() {
+        log.info("외부 트랜잭션 시작");
+        TransactionStatus outer = txManager.getTransaction(new DefaultTransactionAttribute());
+        log.info("내부 트랜잭션 시작");
+        TransactionStatus inner = txManager.getTransaction(new DefaultTransactionAttribute());
+        log.info("내부 트랜잭션 커밋");
+        txManager.commit(inner);
+        log.info("외부 트랜잭션 롤백");
+        txManager.rollback(outer);
     }
 }
