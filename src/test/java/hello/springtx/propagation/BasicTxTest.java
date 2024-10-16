@@ -26,6 +26,7 @@ public class BasicTxTest {
         }
     }
 
+    // 트랜잭션을 시작한 후 커밋하고, 커밋 완료 메시지가 출력되는지 확인.
     @Test
     void commit() {
         log.info("트랜잭션 시작");
@@ -35,6 +36,7 @@ public class BasicTxTest {
         log.info("트랜잭션 커밋 완료");
     }
 
+    // 트랜잭션을 시작한 후 롤백하고, 롤백 완료 메시지가 출력되는지 확인.
     @Test
     void rollback() {
         log.info("트랜잭션 시작");
@@ -42,5 +44,31 @@ public class BasicTxTest {
         log.info("트랜잭션 롤백 시작");
         txManager.rollback(status);
         log.info("트랜잭션 롤백 완료");
+    }
+
+    // 두 개의 독립적인 트랜잭션이 순차적으로 정상적으로 커밋되는지 확인.
+    @Test
+    void double_commit() {
+        log.info("트랜잭션1 시작");
+        TransactionStatus tx1 = txManager.getTransaction(new DefaultTransactionAttribute());
+        log.info("트랜잭션1 커밋");
+        txManager.commit(tx1);
+        log.info("트랜잭션2 시작");
+        TransactionStatus tx2 = txManager.getTransaction(new DefaultTransactionAttribute());
+        log.info("트랜잭션2 커밋");
+        txManager.commit(tx2);
+    }
+
+    // 두 개의 트랜잭션을 연속으로 처리하면서, 첫 번째 트랜잭션은 커밋하고, 두 번째 트랜잭션은 롤백할 때 어떻게 동작하는지 확인.
+    @Test
+    void double_commit_rollback() {
+        log.info("트랜잭션1 시작");
+        TransactionStatus tx1 = txManager.getTransaction(new DefaultTransactionAttribute());
+        log.info("트랜잭션1 커밋");
+        txManager.commit(tx1);
+        log.info("트랜잭션2 시작");
+        TransactionStatus tx2 = txManager.getTransaction(new DefaultTransactionAttribute());
+        log.info("트랜잭션2 롤백");
+        txManager.rollback(tx2);
     }
 }
